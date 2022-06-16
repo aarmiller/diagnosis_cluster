@@ -1,11 +1,10 @@
 euclidean <- function(a, b) sqrt(sum((a - b)^2))
 
 
-find_clusters <- function(fit_data, code_type = "dx9", model = "lm",
-                          normalize = TRUE, k = 5) {
+find_clusters <- function(fit_data,normalize = TRUE, k = 5) {
 
   # prep data
-  tmp <- fit_data[[code_type]][[model]] %>% na.omit
+  tmp <- fit_data %>% na.omit
 
   if (normalize == TRUE){
     tmp[,4:ncol(tmp)] <- tmp[,4:ncol(tmp)] %>%
@@ -39,6 +38,45 @@ find_clusters <- function(fit_data, code_type = "dx9", model = "lm",
               distances = tmp_distances))
 
 }
+
+# find_clusters <- function(fit_data, code_type = "dx9", model = "lm",
+#                           normalize = TRUE, k = 5) {
+#
+#   # prep data
+#   tmp <- fit_data[[code_type]][[model]] %>% na.omit
+#
+#   if (normalize == TRUE){
+#     tmp[,4:ncol(tmp)] <- tmp[,4:ncol(tmp)] %>%
+#       mutate_all(~(.-mean(.))/sd(.))
+#   }
+#
+#   km.res <- kmeans(tmp[,4:ncol(tmp)], k,  nstart = 50,iter.max = 50)
+#
+#   tmp <- tmp %>%
+#     mutate(cluster=km.res$cluster)
+#
+#   tmp_centers <-  km.res$centers %>%
+#     as_tibble() %>%
+#     mutate(cluster=row_number()) %>%
+#     select(cluster,everything()) %>%
+#     group_by(cluster) %>%
+#     nest() %>%
+#     mutate(center = map(data,~as.numeric(as.vector(.)))) %>%
+#     select(cluster,center)
+#
+#   tmp_distances <- tmp[c(1,4:ncol(tmp))] %>%
+#     group_by(index,cluster) %>%
+#     nest() %>%
+#     mutate(v1 = map(data,~as.numeric(as.vector(.)))) %>%
+#     inner_join(tmp_centers, by = "cluster") %>%
+#     mutate(center_distance = map2_dbl(v1,center,euclidean)) %>%
+#     select(index,cluster,v1,center,center_distance)
+#
+#   return(list(clusters = tmp,
+#               centers = tmp_centers,
+#               distances = tmp_distances))
+#
+# }
 
 
 search_clusters <- function(clust_data, search_code){

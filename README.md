@@ -39,3 +39,6 @@ necessary for analysis.
 
 3.  **data** - contains synthetic datasets to replicate the steps of the
     analysis as a tutorial
+    
+    
+## Example using synthetic data
